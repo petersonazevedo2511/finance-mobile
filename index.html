@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Finance Mobile</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  background:#080c0d;
+  color:#f4f1e8;
+  font-family:Arial, sans-serif;
+}
+
+.app{
+  max-width:480px;
+  min-height:100vh;
+  margin:auto;
+  padding:20px 16px 90px;
+}
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:25px;
+}
+
+.logo{
+  font-size:18px;
+  font-weight:800;
+  letter-spacing:2px;
+  color:#f3b45b;
+}
+
+.date{
+  font-size:12px;
+  color:#7f8c8c;
+}
+
+.balance{
+  background:linear-gradient(145deg,#182526,#0d1112);
+  border:1px solid #304345;
+  border-radius:18px;
+  padding:22px;
+  margin-bottom:14px;
+  box-shadow:0 15px 35px #0008;
+}
+
+.label{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:1.5px;
+  color:#8f9b9b;
+}
+
+.balance-value{
+  font-size:34px;
+  font-weight:800;
+  margin-top:8px;
+  color:#f4e7c4;
+}
+
+.summary{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.card{
+  background:#111718;
+  border:1px solid #293839;
+  border-radius:14px;
+  padding:16px;
+}
+
+.card-value{
+  font-size:19px;
+  font-weight:700;
+  margin-top:7px;
+}
+
+.income{
+  color:#9cc7c8;
+}
+
+.expense{
+  color:#e88983;
+}
+
+.actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-bottom:22px;
+}
+
+.action{
+  border:1px solid #385456;
+  border-radius:14px;
+  padding:15px;
+  font-size:14px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.action.in{
+  background:#1b2c2d;
+  color:#a9d1d1;
+}
+
+.action.out{
+  background:#281817;
+  color:#e89b95;
+}
+
+.section{
+  background:#111718;
+  border:1px solid #293839;
+  border-radius:16px;
+  padding:18px;
+  margin-bottom:15px;
+}
+
+.section-title{
+  font-size:12px;
+  color:#d8c18d;
+  letter-spacing:1px;
+  margin-bottom:15px;
+}
+
+.category{
+  display:flex;
+  justify-content:space-between;
+  padding:10px 0;
+  border-bottom:1px solid #202b2c;
+  font-size:14px;
+}
+
+.category:last-child{
+  border-bottom:0;
+}
+
+.transaction{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 0;
+  border-bottom:1px solid #202b2c;
+}
+
+.transaction:last-child{
+  border-bottom:0;
+}
+
+.transaction-name{
+  font-weight:600;
+}
+
+.transaction-cat{
+  font-size:11px;
+  color:#748181;
+  margin-top:4px;
+}
+
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#000b;
+  align-items:flex-end;
+  justify-content:center;
+  z-index:10;
+}
+
+.modal-box{
+  width:100%;
+  max-width:480px;
+  background:#111718;
+  border:1px solid #304345;
+  border-radius:22px 22px 0 0;
+  padding:22px;
+}
+
+.modal-title{
+  font-size:18px;
+  font-weight:700;
+  margin-bottom:18px;
+}
+
+input,select{
+  width:100%;
+  padding:14px;
+  margin-bottom:11px;
+  background:#0a1011;
+  color:#f4f1e8;
+  border:1px solid #344849;
+  border-radius:10px;
+  outline:none;
+}
+
+.save{
+  width:100%;
+  padding:14px;
+  border:0;
+  border-radius:10px;
+  background:#2E4E4F;
+  color:white;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.cancel{
+  width:100%;
+  padding:12px;
+  margin-top:8px;
+  background:none;
+  border:0;
+  color:#8d9999;
+  cursor:pointer;
+}
+
+.bottom{
+  position:fixed;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:480px;
+  padding:12px 18px;
+  background:#0d1213ee;
+  border-top:1px solid #293839;
+  backdrop-filter:blur(12px);
+  display:flex;
+  justify-content:space-around;
+}
+
+.bottom button{
+  background:none;
+  border:0;
+  color:#8d9999;
+  font-size:11px;
+  cursor:pointer;
+}
+
+.bottom button:first-child{
+  color:#f3b45b;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <div class="header">
+    <div class="logo">FINANCE</div>
+    <div class="date" id="today"></div>
+  </div>
+
+  <div class="balance">
+    <div class="label">Saldo disponível</div>
+    <div class="balance-value" id="balance">R$ 0,00</div>
+  </div>
+
+  <div class="summary">
+
+    <div class="card">
+      <div class="label">Receitas</div>
+      <div class="card-value income" id="income">
+        R$ 0,00
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label">Despesas</div>
+      <div class="card-value expense" id="expense">
+        R$ 0,00
+      </div>
+    </div>
+
+  </div>
+
+  <div class="actions">
+
+    <button class="action in" onclick="openModal('income')">
+      + Receita
+    </button>
+
+    <button class="action out" onclick="openModal('expense')">
+      − Gasto
+    </button>
+
+  </div>
+
+  <div class="section">
+
+    <div class="section-title">
+      GASTOS POR CATEGORIA
+    </div>
+
+    <div id="categories">
+      <div class="category">
+        <span>Nenhum gasto registrado</span>
+        <span>R$ 0,00</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section">
+
+    <div class="section-title">
+      ÚLTIMOS LANÇAMENTOS
+    </div>
+
+    <div id="transactions">
+      <div class="transaction">
+        <div>
+          <div class="transaction-name">
+            Nenhum lançamento
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="bottom">
+
+  <button>⌂<br>Início</button>
+  <button onclick="openModal('income')">＋<br>Receita</button>
+  <button onclick="openModal('expense')">−<br>Gasto</button>
+  <button>◉<br>Resumo</button>
+
+</div>
+
+<div class="modal" id="modal">
+
+  <div class="modal-box">
+
+    <div class="modal-title" id="modalTitle">
+      Nova movimentação
+    </div>
+
+    <input
+      id="description"
+      placeholder="Descrição"
+    >
+
+    <input
+      id="value"
+      type="number"
+      step="0.01"
+      placeholder="Valor"
+    >
+
+    <select id="category">
+
+      <option value="Alimentação">
+        Alimentação
+      </option>
+
+      <option value="Transporte">
+        Transporte
+      </option>
+
+      <option value="Casa">
+        Casa
+      </option>
+
+      <option value="Saúde">
+        Saúde
+      </option>
+
+      <option value="Lazer">
+        Lazer
+      </option>
+
+      <option value="Outros">
+        Outros
+      </option>
+
+    </select>
+
+    <button class="save" onclick="saveTransaction()">
+      Salvar
+    </button>
+
+    <button class="cancel" onclick="closeModal()">
+      Cancelar
+    </button>
+
+  </div>
+
+</div>
+
+<script>
+
+let transactions =
+  JSON.parse(localStorage.getItem('financeMobile')) || [];
+
+let currentType = 'expense';
+
+const money = value =>
+  Number(value || 0).toLocaleString(
+    'pt-BR',
+    {
+      style:'currency',
+      currency:'BRL'
+    }
+  );
+
+function openModal(type){
+
+  currentType = type;
+
+  document.getElementById('modalTitle').textContent =
+    type === 'income'
+      ? 'Nova receita'
+      : 'Novo gasto';
+
+  document.getElementById('modal').style.display =
+    'flex';
+
+}
+
+function closeModal(){
+
+  document.getElementById('modal').style.display =
+    'none';
+
+}
+
+function saveTransaction(){
+
+  const description =
+    document.getElementById('description')
+    .value
+    .trim();
+
+  const value =
+    Number(
+      document.getElementById('value').value
+    );
+
+  const category =
+    document.getElementById('category').value;
+
+  if(!description || value <= 0){
+
+    alert('Informe a descrição e um valor válido.');
+
+    return;
+
+  }
+
+  transactions.push({
+
+    id:Date.now(),
+
+    type:currentType,
+
+    description,
+
+    value,
+
+    category,
+
+    date:new Date().toISOString()
+
+  });
+
+  localStorage.setItem(
+    'financeMobile',
+    JSON.stringify(transactions)
+  );
+
+  document.getElementById('description').value='';
+  document.getElementById('value').value='';
+
+  closeModal();
+
+  render();
+
+}
+
+function render(){
+
+  let income = 0;
+  let expense = 0;
+
+  transactions.forEach(t => {
+
+    if(t.type === 'income')
+      income += Number(t.value);
+
+    else
+      expense += Number(t.value);
+
+  });
+
+  document.getElementById('income').textContent =
+    money(income);
+
+  document.getElementById('expense').textContent =
+    money(expense);
+
+  document.getElementById('balance').textContent =
+    money(income - expense);
+
+  renderCategories();
+
+  renderTransactions();
+
+}
+
+function renderCategories(){
+
+  const box =
+    document.getElementById('categories');
+
+  const categories = {};
+
+  transactions
+    .filter(t => t.type === 'expense')
+    .forEach(t => {
+
+      categories[t.category] =
+        (categories[t.category] || 0)
+        + Number(t.value);
+
+    });
+
+  const entries =
+    Object.entries(categories);
+
+  if(!entries.length){
+
+    box.innerHTML = `
+      <div class="category">
+        <span>Nenhum gasto registrado</span>
+        <span>R$ 0,00</span>
+      </div>
+    `;
+
+    return;
+
+  }
+
+  box.innerHTML =
+    entries
+      .sort((a,b)=>b[1]-a[1])
+      .map(([cat,value])=>`
+
+        <div class="category">
+
+          <span>${cat}</span>
+
+          <strong>
+            ${money(value)}
+          </strong>
+
+        </div>
+
+      `)
+      .join('');
+
+}
+
+function renderTransactions(){
+
+  const box =
+    document.getElementById('transactions');
+
+  if(!transactions.length){
+
+    box.innerHTML = `
+      <div class="transaction">
+        <div>
+          <div class="transaction-name">
+            Nenhum lançamento
+          </div>
+        </div>
+      </div>
+    `;
+
+    return;
+
+  }
+
+  box.innerHTML =
+    [...transactions]
+      .reverse()
+      .slice(0,10)
+      .map(t=>`
+
+        <div class="transaction">
+
+          <div>
+
+            <div class="transaction-name">
+              ${t.description}
+            </div>
+
+            <div class="transaction-cat">
+              ${t.category}
+            </div>
+
+          </div>
+
+          <strong class="${
+            t.type === 'income'
+              ? 'income'
+              : 'expense'
+          }">
+
+            ${
+              t.type === 'income'
+                ? '+ '
+                : '- '
+            }
+
+            ${money(t.value)}
+
+          </strong>
+
+        </div>
+
+      `)
+      .join('');
+
+}
+
+document.getElementById('today').textContent =
+  new Date().toLocaleDateString(
+    'pt-BR'
+  );
+
+render();
+
+</script>
+
+</body>
+</html>
