@@ -908,9 +908,7 @@ function renderCategories(){
 function renderTransactions(){
 
   const box =
-    document.getElementById(
-      'transactions'
-    );
+    document.getElementById('transactions');
 
   const list =
     mobileTransactions();
@@ -936,7 +934,11 @@ function renderTransactions(){
       .slice(0,10)
       .map(t=>`
 
-        <div class="transaction">
+        <div
+          class="transaction"
+          onclick="editTransaction('${t.id}')"
+          style="cursor:pointer"
+        >
 
           <div>
 
@@ -971,7 +973,53 @@ function renderTransactions(){
       `)
       .join('');
 }
+  async function editTransaction(id){
 
+  const move =
+    financeData.moves.find(
+      m => m.id === id
+    );
+
+  if(!move){
+
+    alert('Lançamento não encontrado.');
+
+    return;
+  }
+
+  const description =
+    prompt(
+      'Descrição:',
+      move.desc || move.description || ''
+    );
+
+  if(description === null) return;
+
+  const value =
+    prompt(
+      'Valor:',
+      move.value
+    );
+
+  if(value === null) return;
+
+  const category =
+    prompt(
+      'Categoria:',
+      move.cat || move.category || 'Outros'
+    );
+
+  if(category === null) return;
+
+  move.desc = description.trim();
+  move.value = Number(value);
+  move.cat = category.trim();
+
+  await saveFinance();
+
+  render();
+
+}
 function showApp(){
 
   document.getElementById(
