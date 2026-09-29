@@ -404,10 +404,34 @@ input,select{
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
 
-let transactions =
-  JSON.parse(localStorage.getItem('financeMobile')) || [];
+const SUPABASE_URL =
+  'https://soutyvbddqzjbjkkodqx.supabase.co';
+
+const SUPABASE_KEY =
+  'sb_publishable_eLU2Qbz-Cva6mMI8EA4arQ_fi_TyPnR';
+
+const supabaseClient =
+  supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+let financeData = {
+  moves: [],
+  accounts: [],
+  cards: [],
+  assets: [],
+  liabilities: [],
+  goals: [],
+  budgets: [],
+  recurring: []
+};
 
 let currentType = 'expense';
 
@@ -431,22 +455,142 @@ function openModal(type){
 
   document.getElementById('modal').style.display =
     'flex';
-
 }
 
 function closeModal(){
 
   document.getElementById('modal').style.display =
     'none';
-
 }
 
-function saveTransaction(){
+function mobileTransactions(){
+
+  return (financeData.moves || [])
+    .map(m => ({
+      id:m.id,
+      type:m.type === 'income'
+        ? 'income'
+        : 'expense',
+      description:m.desc || '',
+      value:Number(m.value || 0),
+      category:m.cat || 'Outros',
+      date:m.date || ''
+    }));
+}
+
+async function loadFinance(){
+
+  const {
+    data:{user},
+    error:userError
+  } =
+    await supabaseClient.auth.getUser();
+
+  if(userError || !user){
+    return;
+  }
+
+  const {
+    data:row,
+    error
+  } =
+    await supabaseClient
+      .from('finance_data')
+      .select('data')
+      .eq('user_id',user.id)
+      .maybeSingle();
+
+  if(error){
+
+    console.error(error);
+
+    alert(
+      'Não foi possível carregar seus dados financeiros.'
+    );
+
+    return;
+  }
+
+  if(row && row.data){
+
+    financeData = {
+      ...financeData,
+      ...row.data
+    };
+
+    if(!Array.isArray(financeData.moves))
+      financeData.moves=[];
+
+    localStorage.setItem(
+      'financeMobileCloud',
+      JSON.stringify(financeData)
+    );
+
+  }else{
+
+    await saveFinance();
+
+  }
+
+  render();
+}
+
+async function saveFinance(){
+
+  const {
+    data:{user},
+    error:userError
+  } =
+    await supabaseClient.auth.getUser();
+
+  if(userError || !user){
+
+    console.error(
+      'Usuário não autenticado.'
+    );
+
+    return false;
+  }
+
+  localStorage.setItem(
+    'financeMobileCloud',
+    JSON.stringify(financeData)
+  );
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .from('finance_data')
+      .upsert({
+        id:'00000000-0000-0000-0000-000000000001',
+        user_id:user.id,
+        data:financeData
+      });
+
+  if(error){
+
+    console.error(
+      'Erro ao salvar:',
+      error
+    );
+
+    alert(
+      'Não foi possível salvar seus dados.'
+    );
+
+    return false;
+  }
+
+  return true;
+}
+
+async function saveTransaction(){
 
   const description =
     document.getElementById('description')
-    .value
-    .trim();
+      .value
+      .trim();
 
   const value =
     Number(
@@ -458,48 +602,76 @@ function saveTransaction(){
 
   if(!description || value <= 0){
 
-    alert('Informe a descrição e um valor válido.');
+    alert(
+      'Informe a descrição e um valor válido.'
+    );
 
     return;
-
   }
 
-  transactions.push({
+  if(!Array.isArray(financeData.moves))
+    financeData.moves=[];
 
-    id:Date.now(),
+  financeData.moves.push({
 
-    type:currentType,
+    id:
+      'id-' +
+      Date.now() +
+      '-' +
+      Math.random()
+        .toString(36)
+        .slice(2,8),
 
-    description,
+    type:
+      currentType === 'income'
+        ? 'income'
+        : 'expense',
 
-    value,
+    desc:description,
 
-    category,
+    value:value,
 
-    date:new Date().toISOString()
+    cat:category,
+
+    date:
+      new Date()
+        .toISOString()
+        .slice(0,10),
+
+    accountId:'',
+
+    status:'paid'
 
   });
 
-  localStorage.setItem(
-    'financeMobile',
-    JSON.stringify(transactions)
-  );
+  const saved =
+    await saveFinance();
 
-  document.getElementById('description').value='';
-  document.getElementById('value').value='';
+  if(!saved)
+    return;
+
+  document.getElementById(
+    'description'
+  ).value='';
+
+  document.getElementById(
+    'value'
+  ).value='';
 
   closeModal();
 
   render();
-
 }
 
 function render(){
 
-  let income = 0;
-  let expense = 0;
+  const transactions =
+    mobileTransactions();
 
-  transactions.forEach(t => {
+  let income=0;
+  let expense=0;
+
+  transactions.forEach(t=>{
 
     if(t.type === 'income')
       income += Number(t.value);
@@ -509,31 +681,40 @@ function render(){
 
   });
 
-  document.getElementById('income').textContent =
+  document.getElementById(
+    'income'
+  ).textContent =
     money(income);
 
-  document.getElementById('expense').textContent =
+  document.getElementById(
+    'expense'
+  ).textContent =
     money(expense);
 
-  document.getElementById('balance').textContent =
-    money(income - expense);
+  document.getElementById(
+    'balance'
+  ).textContent =
+    money(income-expense);
 
   renderCategories();
 
   renderTransactions();
-
 }
 
 function renderCategories(){
 
   const box =
-    document.getElementById('categories');
+    document.getElementById(
+      'categories'
+    );
 
-  const categories = {};
+  const categories={};
 
-  transactions
-    .filter(t => t.type === 'expense')
-    .forEach(t => {
+  mobileTransactions()
+    .filter(
+      t=>t.type==='expense'
+    )
+    .forEach(t=>{
 
       categories[t.category] =
         (categories[t.category] || 0)
@@ -546,7 +727,7 @@ function renderCategories(){
 
   if(!entries.length){
 
-    box.innerHTML = `
+    box.innerHTML=`
       <div class="category">
         <span>Nenhum gasto registrado</span>
         <span>R$ 0,00</span>
@@ -554,37 +735,44 @@ function renderCategories(){
     `;
 
     return;
-
   }
 
   box.innerHTML =
     entries
-      .sort((a,b)=>b[1]-a[1])
-      .map(([cat,value])=>`
+      .sort(
+        (a,b)=>b[1]-a[1]
+      )
+      .map(
+        ([cat,value])=>`
 
-        <div class="category">
+          <div class="category">
 
-          <span>${cat}</span>
+            <span>${cat}</span>
 
-          <strong>
-            ${money(value)}
-          </strong>
+            <strong>
+              ${money(value)}
+            </strong>
 
-        </div>
+          </div>
 
-      `)
+        `
+      )
       .join('');
-
 }
 
 function renderTransactions(){
 
   const box =
-    document.getElementById('transactions');
+    document.getElementById(
+      'transactions'
+    );
 
-  if(!transactions.length){
+  const list =
+    mobileTransactions();
 
-    box.innerHTML = `
+  if(!list.length){
+
+    box.innerHTML=`
       <div class="transaction">
         <div>
           <div class="transaction-name">
@@ -595,11 +783,10 @@ function renderTransactions(){
     `;
 
     return;
-
   }
 
   box.innerHTML =
-    [...transactions]
+    [...list]
       .reverse()
       .slice(0,10)
       .map(t=>`
@@ -638,15 +825,203 @@ function renderTransactions(){
 
       `)
       .join('');
-
 }
 
-document.getElementById('today').textContent =
+function showApp(){
+
+  document.getElementById(
+    'authScreen'
+  ).style.display='none';
+
+  document.querySelector(
+    '.app'
+  ).style.display='block';
+
+  document.querySelector(
+    '.bottom'
+  ).style.display='flex';
+
+  loadFinance();
+}
+
+function showLogin(){
+
+  document.querySelector(
+    '.app'
+  ).style.display='none';
+
+  document.querySelector(
+    '.bottom'
+  ).style.display='none';
+
+  document.getElementById(
+    'authScreen'
+  ).style.display='flex';
+}
+
+function createLogin(){
+
+  const screen =
+    document.createElement('div');
+
+  screen.id='authScreen';
+
+  screen.style.cssText=`
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:#080c0d;
+  `;
+
+  screen.innerHTML=`
+
+    <div style="
+      width:100%;
+      max-width:380px;
+      padding:30px;
+      border:1px solid #304345;
+      border-radius:20px;
+      background:#111718;
+      box-shadow:0 20px 60px #000b;
+    ">
+
+      <div style="
+        text-align:center;
+        color:#f3b45b;
+        font-size:22px;
+        font-weight:800;
+        letter-spacing:2px;
+        margin-bottom:8px;
+      ">
+        FINANCE
+      </div>
+
+      <div style="
+        text-align:center;
+        color:#8d9999;
+        font-size:13px;
+        margin-bottom:25px;
+      ">
+        Entre na sua conta
+      </div>
+
+      <input
+        id="loginEmail"
+        type="email"
+        placeholder="E-mail"
+      >
+
+      <input
+        id="loginPassword"
+        type="password"
+        placeholder="Senha"
+      >
+
+      <button
+        id="loginButton"
+        class="save"
+      >
+        Entrar
+      </button>
+
+      <div
+        id="loginMessage"
+        style="
+          text-align:center;
+          color:#f3b45b;
+          font-size:12px;
+          margin-top:14px;
+          min-height:18px;
+        "
+      ></div>
+
+    </div>
+  `;
+
+  document.body.appendChild(screen);
+
+  document.getElementById(
+    'loginButton'
+  ).onclick=async()=>{
+
+    const email =
+      document.getElementById(
+        'loginEmail'
+      ).value.trim();
+
+    const password =
+      document.getElementById(
+        'loginPassword'
+      ).value;
+
+    const message =
+      document.getElementById(
+        'loginMessage'
+      );
+
+    if(!email || !password){
+
+      message.textContent =
+        'Digite seu e-mail e sua senha.';
+
+      return;
+    }
+
+    message.textContent =
+      'Entrando...';
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth
+        .signInWithPassword({
+          email,
+          password
+        });
+
+    if(error){
+
+      message.textContent =
+        'E-mail ou senha incorretos.';
+
+      console.error(error);
+
+      return;
+    }
+
+    if(data.session){
+
+      showApp();
+
+    }
+  };
+}
+
+document.getElementById(
+  'today'
+).textContent =
   new Date().toLocaleDateString(
     'pt-BR'
   );
 
-render();
+createLogin();
+
+supabaseClient.auth
+  .getSession()
+  .then(({data})=>{
+
+    if(data.session)
+      showApp();
+
+    else
+      showLogin();
+
+  });
 
 </script>
 
