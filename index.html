@@ -346,7 +346,7 @@ input,select{
   <button>⌂<br>Início</button>
   <button onclick="openModal('income')">＋<br>Receita</button>
   <button onclick="openModal('expense')">−<br>Gasto</button>
-  <button onclick="openSummary()">◉<br>Resumo</button>
+  <button>◉<br>Resumo</button>
 
 </div>
 
@@ -1030,36 +1030,6 @@ supabaseClient.auth
   });
 
   });
-
-
-  function openSummary(){
-
-    const income = financeData.moves
-      .filter(move => move.type === 'income')
-      .reduce(
-        (total, move) =>
-          total + Number(move.value || 0),
-        0
-      );
-
-    const expense = financeData.moves
-      .filter(move => move.type === 'expense')
-      .reduce(
-        (total, move) =>
-          total + Number(move.value || 0),
-        0
-      );
-
-    const balance = income - expense;
-
-    alert(
-      'RESUMO FINANCEIRO\n\n' +
-      'Receitas: ' + money(income) + '\n' +
-      'Gastos: ' + money(expense) + '\n' +
-      'Saldo: ' + money(balance)
-    );
-
-  }
 
 </script>
 
