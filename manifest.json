@@ -1,0 +1,10 @@
+{
+  "name": "Finance",
+  "short_name": "Finance",
+  "description": "Controle financeiro pessoal",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#101617",
+  "theme_color": "#101617",
+  "orientation": "portrait"
+}
