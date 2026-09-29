@@ -1,18 +1,22 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+
 <link rel="manifest" href="/manifest.json">
+
 <meta name="theme-color" content="#101617">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Finance">
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Finance Mobile</title>
 
 <style>
+
 *{
   box-sizing:border-box;
 }
@@ -21,14 +25,20 @@ body{
   margin:0;
   background:#080c0d;
   color:#f4f1e8;
-  font-family:Arial, sans-serif;
+  font-family:Arial,sans-serif;
+}
+
+button,
+input,
+select{
+  font:inherit;
 }
 
 .app{
   max-width:480px;
   min-height:100vh;
   margin:auto;
-  padding:20px 16px 90px;
+  padding:20px 16px 100px;
 }
 
 .header{
@@ -158,8 +168,9 @@ body{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:12px 0;
+  padding:13px 0;
   border-bottom:1px solid #202b2c;
+  cursor:pointer;
 }
 
 .transaction:last-child{
@@ -176,6 +187,36 @@ body{
   margin-top:4px;
 }
 
+.bottom{
+  position:fixed;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:480px;
+  padding:10px 8px;
+  background:#0d1213ee;
+  border-top:1px solid #293839;
+  backdrop-filter:blur(12px);
+  display:flex;
+  justify-content:space-around;
+  z-index:1000;
+}
+
+.bottom button{
+  background:none;
+  border:0;
+  color:#8d9999;
+  font-size:11px;
+  cursor:pointer;
+  min-width:62px;
+  padding:4px;
+}
+
+.bottom button.active{
+  color:#f3b45b;
+}
+
 .modal{
   display:none;
   position:fixed;
@@ -183,7 +224,7 @@ body{
   background:#000b;
   align-items:flex-end;
   justify-content:center;
-  z-index:10;
+  z-index:2000;
 }
 
 .modal-box{
@@ -193,6 +234,8 @@ body{
   border:1px solid #304345;
   border-radius:22px 22px 0 0;
   padding:22px;
+  max-height:92vh;
+  overflow-y:auto;
 }
 
 .modal-title{
@@ -201,7 +244,30 @@ body{
   margin-bottom:18px;
 }
 
-input,select{
+.type-switch{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-bottom:12px;
+}
+
+.type-switch button{
+  padding:12px;
+  border:1px solid #344849;
+  border-radius:10px;
+  background:#0a1011;
+  color:#aaa;
+  cursor:pointer;
+}
+
+.type-switch button.selected{
+  background:#2E4E4F;
+  color:white;
+  border-color:#557879;
+}
+
+input,
+select{
   width:100%;
   padding:14px;
   margin-bottom:11px;
@@ -212,15 +278,25 @@ input,select{
   outline:none;
 }
 
-.save{
+.save,
+.danger{
   width:100%;
   padding:14px;
   border:0;
   border-radius:10px;
-  background:#2E4E4F;
-  color:white;
   font-weight:700;
   cursor:pointer;
+}
+
+.save{
+  background:#2E4E4F;
+  color:white;
+}
+
+.danger{
+  background:#351918;
+  color:#e88983;
+  margin-top:8px;
 }
 
 .cancel{
@@ -233,32 +309,105 @@ input,select{
   cursor:pointer;
 }
 
-.bottom{
+.full-screen{
   position:fixed;
-  bottom:0;
-  left:50%;
-  transform:translateX(-50%);
-  width:100%;
-  max-width:480px;
-  padding:12px 18px;
-  background:#0d1213ee;
-  border-top:1px solid #293839;
-  backdrop-filter:blur(12px);
-  display:flex;
-  justify-content:space-around;
+  inset:0;
+  z-index:1500;
+  background:#101617;
+  color:white;
+  display:none;
+  overflow-y:auto;
 }
 
-.bottom button{
-  background:none;
+.full-content{
+  max-width:480px;
+  margin:auto;
+  padding:24px 16px 100px;
+}
+
+.screen-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:25px;
+}
+
+.screen-header h2{
+  margin:5px 0 0;
+}
+
+.gold{
+  color:#d6b36a;
+}
+
+.close-btn{
+  background:#182224;
+  color:white;
   border:0;
-  color:#8d9999;
-  font-size:11px;
+  border-radius:10px;
+  padding:10px 14px;
+  font-size:18px;
+}
+
+.stat-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-bottom:24px;
+}
+
+.stat{
+  background:#182224;
+  border-radius:16px;
+  padding:18px;
+}
+
+.stat .small{
+  color:#999;
+  font-size:13px;
+}
+
+.stat strong{
+  display:block;
+  margin-top:8px;
+  font-size:20px;
+}
+
+.more-item{
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#182224;
+  border:1px solid #293839;
+  color:white;
+  padding:17px;
+  border-radius:14px;
+  margin-bottom:10px;
+  text-align:left;
   cursor:pointer;
 }
 
-.bottom button:first-child{
-  color:#f3b45b;
+.account{
+  background:#182224;
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:10px;
+  display:flex;
+  justify-content:space-between;
 }
+
+.empty{
+  color:#999;
+  padding:10px 0;
+}
+
+.setting-note{
+  color:#8d9999;
+  font-size:13px;
+  line-height:1.5;
+}
+
 </style>
 </head>
 
@@ -267,40 +416,77 @@ input,select{
 <div class="app">
 
   <div class="header">
-    <div class="logo">FINANCE</div>
+
+    <div class="logo">
+      FINANCE
+    </div>
+
     <div class="date" id="today"></div>
+
   </div>
 
   <div class="balance">
-    <div class="label">Saldo disponível</div>
-    <div class="balance-value" id="balance">R$ 0,00</div>
+
+    <div class="label">
+      Saldo disponível
+    </div>
+
+    <div
+      class="balance-value"
+      id="balance"
+    >
+      R$ 0,00
+    </div>
+
   </div>
 
   <div class="summary">
 
     <div class="card">
-      <div class="label">Receitas</div>
-      <div class="card-value income" id="income">
+
+      <div class="label">
+        Receitas
+      </div>
+
+      <div
+        class="card-value income"
+        id="income"
+      >
         R$ 0,00
       </div>
+
     </div>
 
     <div class="card">
-      <div class="label">Despesas</div>
-      <div class="card-value expense" id="expense">
+
+      <div class="label">
+        Despesas
+      </div>
+
+      <div
+        class="card-value expense"
+        id="expense"
+      >
         R$ 0,00
       </div>
+
     </div>
 
   </div>
 
   <div class="actions">
 
-    <button class="action in" onclick="openModal('income')">
+    <button
+      class="action in"
+      onclick="openModal('income')"
+    >
       + Receita
     </button>
 
-    <button class="action out" onclick="openModal('expense')">
+    <button
+      class="action out"
+      onclick="openModal('expense')"
+    >
       − Gasto
     </button>
 
@@ -312,12 +498,7 @@ input,select{
       GASTOS POR CATEGORIA
     </div>
 
-    <div id="categories">
-      <div class="category">
-        <span>Nenhum gasto registrado</span>
-        <span>R$ 0,00</span>
-      </div>
-    </div>
+    <div id="categories"></div>
 
   </div>
 
@@ -327,35 +508,82 @@ input,select{
       ÚLTIMOS LANÇAMENTOS
     </div>
 
-    <div id="transactions">
-      <div class="transaction">
-        <div>
-          <div class="transaction-name">
-            Nenhum lançamento
-          </div>
-        </div>
-      </div>
-    </div>
+    <div id="transactions"></div>
 
   </div>
 
 </div>
 
-<div class="bottom">
+<!-- NAVEGAÇÃO -->
 
-  <button>⌂<br>Início</button>
-  <button onclick="openModal('income')">＋<br>Receita</button>
-  <button onclick="openModal('expense')">−<br>Gasto</button>
-  <button onclick="openSummary()">◉<br>Resumo</button>
+<div
+  class="bottom"
+  id="bottomNav"
+>
+
+  <button
+    class="active"
+    onclick="goHome()"
+  >
+    ⌂<br>
+    Início
+  </button>
+
+  <button
+    onclick="openModal()"
+  >
+    ＋<br>
+    Lançar
+  </button>
+
+  <button
+    onclick="openSummary()"
+  >
+    ◉<br>
+    Resumo
+  </button>
+
+  <button
+    onclick="openMore()"
+  >
+    ☰<br>
+    Mais
+  </button>
 
 </div>
 
-<div class="modal" id="modal">
+<!-- MODAL DE LANÇAMENTO / EDIÇÃO -->
+
+<div
+  class="modal"
+  id="modal"
+>
 
   <div class="modal-box">
 
-    <div class="modal-title" id="modalTitle">
-      Nova movimentação
+    <div
+      class="modal-title"
+      id="modalTitle"
+    >
+      Novo lançamento
+    </div>
+
+    <div class="type-switch">
+
+      <button
+        id="typeIncome"
+        onclick="setModalType('income')"
+      >
+        + Receita
+      </button>
+
+      <button
+        id="typeExpense"
+        onclick="setModalType('expense')"
+      >
+        − Gasto
+      </button>
+
     </div>
 
     <input
@@ -367,6 +595,7 @@ input,select{
       id="value"
       type="number"
       step="0.01"
+      min="0"
       placeholder="Valor"
     >
 
@@ -398,158 +627,295 @@ input,select{
 
     </select>
 
-    <button class="save" onclick="saveTransaction()">
-      Salvar
+    <input
+      id="date"
+      type="date"
+    >
+
+    <button
+      class="save"
+      id="saveButton"
+      onclick="saveTransaction()"
+    >
+      Salvar lançamento
     </button>
 
-    <button class="cancel" onclick="closeModal()">
+    <button
+      class="danger"
+      id="deleteButton"
+      style="display:none"
+      onclick="deleteTransaction()"
+    >
+      Excluir lançamento
+    </button>
+
+    <button
+      class="cancel"
+      onclick="closeModal()"
+    >
       Cancelar
     </button>
 
   </div>
 
 </div>
-  <div id="summaryScreen" style="
-  display:none;
-  position:fixed;
-  inset:0;
-  z-index:9000;
-  background:#101617;
-  color:white;
-  padding:24px;
-  box-sizing:border-box;
-  overflow-y:auto;
-">
 
-  <div style="
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:28px;
-  ">
+<!-- RESUMO -->
 
-    <div>
-      <div style="
-        color:#d6b36a;
-        font-size:13px;
-        letter-spacing:2px;
-      ">
-        FINANCE
+<div
+  class="full-screen"
+  id="summaryScreen"
+>
+
+  <div class="full-content">
+
+    <div class="screen-header">
+
+      <div>
+
+        <div
+          class="gold"
+          style="font-size:13px;letter-spacing:2px"
+        >
+          FINANCE
+        </div>
+
+        <h2>
+          Resumo financeiro
+        </h2>
+
       </div>
 
-      <h2 style="margin:6px 0 0;">
-        Resumo financeiro
-      </h2>
+      <button
+        class="close-btn"
+        onclick="closeSummary()"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div class="balance">
+
+      <div class="label">
+        Saldo atual
+      </div>
+
+      <div
+        class="balance-value"
+        id="summaryBalance"
+      >
+        R$ 0,00
+      </div>
+
+    </div>
+
+    <div class="stat-grid">
+
+      <div class="stat">
+
+        <div class="small">
+          Receitas
+        </div>
+
+        <strong id="summaryIncome">
+          R$ 0,00
+        </strong>
+
+      </div>
+
+      <div class="stat">
+
+        <div class="small">
+          Gastos
+        </div>
+
+        <strong id="summaryExpense">
+          R$ 0,00
+        </strong>
+
+      </div>
+
+    </div>
+
+    <h3>
+      Gastos por categoria
+    </h3>
+
+    <div id="summaryCategories"></div>
+
+  </div>
+
+</div>
+
+<!-- MAIS -->
+
+<div
+  class="full-screen"
+  id="moreScreen"
+>
+
+  <div class="full-content">
+
+    <div class="screen-header">
+
+      <div>
+
+        <div
+          class="gold"
+          style="font-size:13px;letter-spacing:2px"
+        >
+          FINANCE
+        </div>
+
+        <h2>
+          Mais
+        </h2>
+
+      </div>
+
+      <button
+        class="close-btn"
+        onclick="closeMore()"
+      >
+        ×
+      </button>
+
     </div>
 
     <button
-      onclick="closeSummary()"
-      style="
-        background:#182224;
-        color:white;
-        border:0;
-        border-radius:10px;
-        padding:10px 14px;
-        font-size:18px;
-      "
+      class="more-item"
+      onclick="openAccounts()"
     >
-      ×
+
+      <span>
+        🏦 Contas
+      </span>
+
+      <span>
+        ›
+      </span>
+
+    </button>
+
+    <button
+      class="more-item"
+      onclick="openSettings()"
+    >
+
+      <span>
+        ⚙ Configurações
+      </span>
+
+      <span>
+        ›
+      </span>
+
     </button>
 
   </div>
 
-  <div style="
-    background:#182224;
-    border-radius:18px;
-    padding:22px;
-    margin-bottom:14px;
-  ">
+</div>
 
-    <div style="
-      color:#999;
-      font-size:13px;
-      margin-bottom:8px;
-    ">
-      Saldo atual
+<!-- CONTAS -->
+
+<div
+  class="full-screen"
+  id="accountsScreen"
+>
+
+  <div class="full-content">
+
+    <div class="screen-header">
+
+      <div>
+
+        <div
+          class="gold"
+          style="font-size:13px;letter-spacing:2px"
+        >
+          FINANCE
+        </div>
+
+        <h2>
+          Contas
+        </h2>
+
+      </div>
+
+      <button
+        class="close-btn"
+        onclick="closeAccounts()"
+      >
+        ×
+      </button>
+
     </div>
 
-    <div
-      id="summaryBalance"
-      style="
-        font-size:30px;
-        font-weight:bold;
-        color:#d6b36a;
-      "
-    >
-      R$ 0,00
-    </div>
+    <div id="accountsList"></div>
 
   </div>
-
-  <div style="
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:12px;
-    margin-bottom:24px;
-  ">
-
-    <div style="
-      background:#182224;
-      border-radius:16px;
-      padding:18px;
-    ">
-
-      <div style="color:#999;font-size:13px;">
-        Receitas
-      </div>
-
-      <div
-        id="summaryIncome"
-        style="
-          margin-top:8px;
-          font-size:20px;
-          font-weight:bold;
-        "
-      >
-        R$ 0,00
-      </div>
-
-    </div>
-
-    <div style="
-      background:#182224;
-      border-radius:16px;
-      padding:18px;
-    ">
-
-      <div style="color:#999;font-size:13px;">
-        Gastos
-      </div>
-
-      <div
-        id="summaryExpense"
-        style="
-          margin-top:8px;
-          font-size:20px;
-          font-weight:bold;
-        "
-      >
-        R$ 0,00
-      </div>
-
-    </div>
-
-  </div>
-
-  <h3 style="margin-bottom:12px;">
-    Gastos por categoria
-  </h3>
-
-  <div id="summaryCategories"></div>
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- CONFIGURAÇÕES -->
+
+<div
+  class="full-screen"
+  id="settingsScreen"
+>
+
+  <div class="full-content">
+
+    <div class="screen-header">
+
+      <div>
+
+        <div
+          class="gold"
+          style="font-size:13px;letter-spacing:2px"
+        >
+          FINANCE
+        </div>
+
+        <h2>
+          Configurações
+        </h2>
+
+      </div>
+
+      <button
+        class="close-btn"
+        onclick="closeSettings()"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div class="section">
+
+      <div class="section-title">
+        CONTA
+      </div>
+
+      <div class="setting-note">
+        Seus dados financeiros são sincronizados
+        com sua conta e mantidos no Supabase.
+      </div>
+
+    </div>
+
+    <button
+      class="danger"
+      onclick="logout()"
+    >
+      Sair da conta
+    </button>
+
+  </div>
+
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -567,7 +933,9 @@ const supabaseClient =
     SUPABASE_KEY
   );
 
+
 let financeData = {
+
   moves: [],
   accounts: [],
   cards: [],
@@ -576,11 +944,17 @@ let financeData = {
   goals: [],
   budgets: [],
   recurring: []
+
 };
+
 
 let currentType = 'expense';
 
+let editingId = null;
+
+
 const money = value =>
+
   Number(value || 0).toLocaleString(
     'pt-BR',
     {
@@ -589,39 +963,427 @@ const money = value =>
     }
   );
 
-function openModal(type){
 
-  currentType = type;
+function localDate(){
 
-  document.getElementById('modalTitle').textContent =
-    type === 'income'
-      ? 'Nova receita'
-      : 'Novo gasto';
+  const d = new Date();
 
-  document.getElementById('modal').style.display =
-    'flex';
+  return (
+    d.getFullYear() +
+    '-' +
+    String(d.getMonth()+1).padStart(2,'0') +
+    '-' +
+    String(d.getDate()).padStart(2,'0')
+  );
+
 }
 
-function closeModal(){
 
-  document.getElementById('modal').style.display =
-    'none';
+function formatDate(date){
+
+  if(!date)
+    return '';
+
+  const parts =
+    date.split('-');
+
+  if(parts.length !== 3)
+    return date;
+
+  return (
+    parts[2] +
+    '/' +
+    parts[1] +
+    '/' +
+    parts[0]
+  );
+
 }
+
+
+function escapeHtml(value){
+
+  return String(value ?? '')
+    .replace(
+      /[&<>"']/g,
+      char => ({
+        '&':'&amp;',
+        '<':'&lt;',
+        '>':'&gt;',
+        '"':'&quot;',
+        "'":'&#039;'
+      }[char])
+    );
+
+}
+
 
 function mobileTransactions(){
 
   return (financeData.moves || [])
     .map(m => ({
+
       id:m.id,
-      type:m.type === 'income'
-        ? 'income'
-        : 'expense',
-      description:m.desc || '',
-      value:Number(m.value || 0),
-      category:m.cat || 'Outros',
-      date:m.date || ''
+
+      type:
+        m.type === 'income'
+          ? 'income'
+          : 'expense',
+
+      description:
+        m.desc || '',
+
+      value:
+        Number(m.value || 0),
+
+      category:
+        m.cat || 'Outros',
+
+      date:
+        m.date || localDate()
+
     }));
+
 }
+
+
+function setModalType(type){
+
+  currentType = type;
+
+  document
+    .getElementById('typeIncome')
+    .classList.toggle(
+      'selected',
+      type === 'income'
+    );
+
+  document
+    .getElementById('typeExpense')
+    .classList.toggle(
+      'selected',
+      type === 'expense'
+    );
+
+}
+
+
+function openModal(type){
+
+  editingId = null;
+
+  currentType =
+    type || 'expense';
+
+  setModalType(currentType);
+
+  document.getElementById(
+    'modalTitle'
+  ).textContent =
+    currentType === 'income'
+      ? 'Nova receita'
+      : 'Novo gasto';
+
+  document.getElementById(
+    'saveButton'
+  ).textContent =
+    'Salvar lançamento';
+
+  document.getElementById(
+    'deleteButton'
+  ).style.display =
+    'none';
+
+  document.getElementById(
+    'description'
+  ).value = '';
+
+  document.getElementById(
+    'value'
+  ).value = '';
+
+  document.getElementById(
+    'category'
+  ).value = 'Outros';
+
+  document.getElementById(
+    'date'
+  ).value =
+    localDate();
+
+  document.getElementById(
+    'modal'
+  ).style.display =
+    'flex';
+
+}
+
+
+function closeModal(){
+
+  document.getElementById(
+    'modal'
+  ).style.display =
+    'none';
+
+  editingId = null;
+
+}
+
+
+function editTransaction(id){
+
+  const move =
+    (financeData.moves || [])
+      .find(
+        m => m.id === id
+      );
+
+  if(!move){
+
+    alert(
+      'Lançamento não encontrado.'
+    );
+
+    return;
+  }
+
+  editingId = id;
+
+  currentType =
+    move.type === 'income'
+      ? 'income'
+      : 'expense';
+
+  setModalType(currentType);
+
+  document.getElementById(
+    'modalTitle'
+  ).textContent =
+    'Editar lançamento';
+
+  document.getElementById(
+    'saveButton'
+  ).textContent =
+    'Salvar alterações';
+
+  document.getElementById(
+    'deleteButton'
+  ).style.display =
+    'block';
+
+  document.getElementById(
+    'description'
+  ).value =
+    move.desc || '';
+
+  document.getElementById(
+    'value'
+  ).value =
+    Number(move.value || 0);
+
+  document.getElementById(
+    'category'
+  ).value =
+    move.cat || 'Outros';
+
+  document.getElementById(
+    'date'
+  ).value =
+    move.date || localDate();
+
+  document.getElementById(
+    'modal'
+  ).style.display =
+    'flex';
+
+}
+
+
+async function saveTransaction(){
+
+  const description =
+    document.getElementById(
+      'description'
+    ).value.trim();
+
+  const value =
+    Number(
+      document.getElementById(
+        'value'
+      ).value
+    );
+
+  const category =
+    document.getElementById(
+      'category'
+    ).value;
+
+  const date =
+    document.getElementById(
+      'date'
+    ).value ||
+    localDate();
+
+
+  if(
+    !description ||
+    value <= 0
+  ){
+
+    alert(
+      'Informe a descrição e um valor válido.'
+    );
+
+    return;
+  }
+
+
+  if(
+    !Array.isArray(
+      financeData.moves
+    )
+  ){
+
+    financeData.moves = [];
+
+  }
+
+
+  if(editingId){
+
+    const move =
+      financeData.moves.find(
+        m => m.id === editingId
+      );
+
+    if(!move){
+
+      alert(
+        'Lançamento não encontrado.'
+      );
+
+      return;
+    }
+
+
+    move.type =
+      currentType;
+
+    move.desc =
+      description;
+
+    move.value =
+      value;
+
+    move.cat =
+      category;
+
+    move.date =
+      date;
+
+
+  }else{
+
+    financeData.moves.push({
+
+      id:
+        'id-' +
+        Date.now() +
+        '-' +
+        Math.random()
+          .toString(36)
+          .slice(2,8),
+
+      type:
+        currentType,
+
+      desc:
+        description,
+
+      value:
+        value,
+
+      cat:
+        category,
+
+      date:
+        date,
+
+      accountId:
+        '',
+
+      status:
+        'paid'
+
+    });
+
+  }
+
+
+  const saved =
+    await saveFinance();
+
+
+  if(!saved)
+    return;
+
+
+  closeModal();
+
+  render();
+
+}
+
+
+async function deleteTransaction(){
+
+  if(!editingId)
+    return;
+
+
+  const move =
+    financeData.moves.find(
+      m => m.id === editingId
+    );
+
+
+  if(!move)
+    return;
+
+
+  const confirmed =
+    confirm(
+      'Excluir "' +
+      (move.desc || 'este lançamento') +
+      '"?'
+    );
+
+
+  if(!confirmed)
+    return;
+
+
+  financeData.moves =
+    financeData.moves.filter(
+      m => m.id !== editingId
+    );
+
+
+  const saved =
+    await saveFinance();
+
+
+  if(!saved)
+    return;
+
+
+  closeModal();
+
+  render();
+
+}
+
 
 async function loadFinance(){
 
@@ -629,11 +1391,20 @@ async function loadFinance(){
     data:{user},
     error:userError
   } =
-    await supabaseClient.auth.getUser();
+    await supabaseClient
+      .auth
+      .getUser();
 
-  if(userError || !user){
+
+  if(
+    userError ||
+    !user
+  ){
+
     return;
+
   }
+
 
   const {
     data:row,
@@ -642,8 +1413,12 @@ async function loadFinance(){
     await supabaseClient
       .from('finance_data')
       .select('data')
-      .eq('user_id',user.id)
+      .eq(
+        'user_id',
+        user.id
+      )
       .maybeSingle();
+
 
   if(error){
 
@@ -654,22 +1429,53 @@ async function loadFinance(){
     );
 
     return;
+
   }
 
-  if(row && row.data){
+
+  if(
+    row &&
+    row.data
+  ){
 
     financeData = {
+
       ...financeData,
+
       ...row.data
+
     };
 
-    if(!Array.isArray(financeData.moves))
-      financeData.moves=[];
+
+    if(
+      !Array.isArray(
+        financeData.moves
+      )
+    ){
+
+      financeData.moves = [];
+
+    }
+
+
+    if(
+      !Array.isArray(
+        financeData.accounts
+      )
+    ){
+
+      financeData.accounts = [];
+
+    }
+
 
     localStorage.setItem(
       'financeMobileCloud',
-      JSON.stringify(financeData)
+      JSON.stringify(
+        financeData
+      )
     );
+
 
   }else{
 
@@ -677,8 +1483,11 @@ async function loadFinance(){
 
   }
 
+
   render();
+
 }
+
 
 async function saveFinance(){
 
@@ -686,21 +1495,32 @@ async function saveFinance(){
     data:{user},
     error:userError
   } =
-    await supabaseClient.auth.getUser();
+    await supabaseClient
+      .auth
+      .getUser();
 
-  if(userError || !user){
+
+  if(
+    userError ||
+    !user
+  ){
 
     console.error(
       'Usuário não autenticado.'
     );
 
     return false;
+
   }
+
 
   localStorage.setItem(
     'financeMobileCloud',
-    JSON.stringify(financeData)
+    JSON.stringify(
+      financeData
+    )
   );
+
 
   const {
     error
@@ -708,10 +1528,18 @@ async function saveFinance(){
     await supabaseClient
       .from('finance_data')
       .upsert({
-        id:'00000000-0000-0000-0000-000000000001',
-        user_id:user.id,
-        data:financeData
+
+        id:
+          '00000000-0000-0000-0000-000000000001',
+
+        user_id:
+          user.id,
+
+        data:
+          financeData
+
       });
+
 
   if(error){
 
@@ -725,126 +1553,73 @@ async function saveFinance(){
     );
 
     return false;
+
   }
+
 
   return true;
+
 }
 
-async function saveTransaction(){
-
-  const description =
-    document.getElementById('description')
-      .value
-      .trim();
-
-  const value =
-    Number(
-      document.getElementById('value').value
-    );
-
-  const category =
-    document.getElementById('category').value;
-
-  if(!description || value <= 0){
-
-    alert(
-      'Informe a descrição e um valor válido.'
-    );
-
-    return;
-  }
-
-  if(!Array.isArray(financeData.moves))
-    financeData.moves=[];
-
-  financeData.moves.push({
-
-    id:
-      'id-' +
-      Date.now() +
-      '-' +
-      Math.random()
-        .toString(36)
-        .slice(2,8),
-
-    type:
-      currentType === 'income'
-        ? 'income'
-        : 'expense',
-
-    desc:description,
-
-    value:value,
-
-    cat:category,
-
-    date:
-      new Date()
-        .toISOString()
-        .slice(0,10),
-
-    accountId:'',
-
-    status:'paid'
-
-  });
-
-  const saved =
-    await saveFinance();
-
-  if(!saved)
-    return;
-
-  document.getElementById(
-    'description'
-  ).value='';
-
-  document.getElementById(
-    'value'
-  ).value='';
-
-  closeModal();
-
-  render();
-}
 
 function render(){
 
   const transactions =
     mobileTransactions();
 
-  let income=0;
-  let expense=0;
 
-  transactions.forEach(t=>{
+  let income = 0;
 
-    if(t.type === 'income')
-      income += Number(t.value);
+  let expense = 0;
 
-    else
-      expense += Number(t.value);
 
-  });
+  transactions.forEach(
+    t => {
+
+      if(
+        t.type === 'income'
+      ){
+
+        income +=
+          t.value;
+
+      }else{
+
+        expense +=
+          t.value;
+
+      }
+
+    }
+  );
+
 
   document.getElementById(
     'income'
   ).textContent =
     money(income);
 
+
   document.getElementById(
     'expense'
   ).textContent =
     money(expense);
 
+
   document.getElementById(
     'balance'
   ).textContent =
-    money(income-expense);
+    money(
+      income - expense
+    );
+
 
   renderCategories();
 
   renderTransactions();
+
 }
+
 
 function renderCategories(){
 
@@ -853,46 +1628,64 @@ function renderCategories(){
       'categories'
     );
 
-  const categories={};
+
+  const categories = {};
+
 
   mobileTransactions()
     .filter(
-      t=>t.type==='expense'
+      t =>
+        t.type === 'expense'
     )
-    .forEach(t=>{
+    .forEach(
+      t => {
 
-      categories[t.category] =
-        (categories[t.category] || 0)
-        + Number(t.value);
+        categories[t.category] =
+          (
+            categories[t.category] ||
+            0
+          ) +
+          t.value;
 
-    });
+      }
+    );
+
 
   const entries =
-    Object.entries(categories);
+    Object.entries(
+      categories
+    )
+    .sort(
+      (a,b) =>
+        b[1] - a[1]
+    );
+
 
   if(!entries.length){
 
-    box.innerHTML=`
-      <div class="category">
-        <span>Nenhum gasto registrado</span>
-        <span>R$ 0,00</span>
+    box.innerHTML =
+      `
+      <div class="empty">
+        Nenhum gasto registrado
       </div>
-    `;
+      `;
 
     return;
+
   }
+
 
   box.innerHTML =
     entries
-      .sort(
-        (a,b)=>b[1]-a[1]
-      )
       .map(
-        ([cat,value])=>`
+        ([category,value]) =>
+          `
 
           <div class="category">
 
-            <span>${cat}</span>
+            <span>
+              ${escapeHtml(category)}
+            </span>
 
             <strong>
               ${money(value)}
@@ -900,207 +1693,530 @@ function renderCategories(){
 
           </div>
 
-        `
+          `
       )
       .join('');
+
 }
+
 
 function renderTransactions(){
 
   const box =
-    document.getElementById('transactions');
+    document.getElementById(
+      'transactions'
+    );
+
 
   const list =
-    mobileTransactions();
+    [...mobileTransactions()]
+      .reverse()
+      .slice(
+        0,
+        10
+      );
+
 
   if(!list.length){
 
-    box.innerHTML=`
-      <div class="transaction">
-        <div>
-          <div class="transaction-name">
-            Nenhum lançamento
-          </div>
-        </div>
+    box.innerHTML =
+      `
+      <div class="empty">
+        Nenhum lançamento
       </div>
-    `;
+      `;
 
     return;
+
   }
+
 
   box.innerHTML =
-    [...list]
-      .reverse()
-      .slice(0,10)
-      .map(t=>`
+    list
+      .map(
+        t =>
+          `
 
-        <div
-          class="transaction"
-          onclick="editTransaction('${t.id}')"
-          style="cursor:pointer"
-        >
+          <div
+            class="transaction"
+            onclick="editTransaction('${escapeHtml(t.id)}')"
+          >
 
-          <div>
+            <div>
 
-            <div class="transaction-name">
-              ${t.description}
+              <div class="transaction-name">
+                ${escapeHtml(t.description)}
+              </div>
+
+              <div class="transaction-cat">
+                ${escapeHtml(t.category)}
+                ·
+                ${formatDate(t.date)}
+              </div>
+
             </div>
 
-            <div class="transaction-cat">
-              ${t.category}
-            </div>
+            <strong
+              class="${
+                t.type === 'income'
+                  ? 'income'
+                  : 'expense'
+              }"
+            >
+
+              ${
+                t.type === 'income'
+                  ? '+ '
+                  : '- '
+              }
+
+              ${money(t.value)}
+
+            </strong>
 
           </div>
 
-          <strong class="${
-            t.type === 'income'
-              ? 'income'
-              : 'expense'
-          }">
-
-            ${
-              t.type === 'income'
-                ? '+ '
-                : '- '
-            }
-
-            ${money(t.value)}
-
-          </strong>
-
-        </div>
-
-      `)
+          `
+      )
       .join('');
-}
-  async function editTransaction(id){
-
-  const move =
-    financeData.moves.find(
-      m => m.id === id
-    );
-
-  if(!move){
-
-    alert('Lançamento não encontrado.');
-
-    return;
-  }
-
-  const description =
-    prompt(
-      'Descrição:',
-      move.desc || move.description || ''
-    );
-
-  if(description === null) return;
-
-  const value =
-    prompt(
-      'Valor:',
-      move.value
-    );
-
-  if(value === null) return;
-
-  const category =
-    prompt(
-      'Categoria:',
-      move.cat || move.category || 'Outros'
-    );
-
-  if(category === null) return;
-
-  move.desc = description.trim();
-  move.value = Number(value);
-  move.cat = category.trim();
-
-  await saveFinance();
-
-  render();
 
 }
-function showApp(){
+
+
+function openSummary(){
+
+  let income = 0;
+
+  let expense = 0;
+
+  const categories = {};
+
+
+  mobileTransactions()
+    .forEach(
+      move => {
+
+        if(
+          move.type === 'income'
+        ){
+
+          income +=
+            move.value;
+
+        }else{
+
+          expense +=
+            move.value;
+
+
+          categories[
+            move.category
+          ] =
+            (
+              categories[
+                move.category
+              ] ||
+              0
+            ) +
+            move.value;
+
+        }
+
+      }
+    );
+
 
   document.getElementById(
-    'authScreen'
-  ).style.display='none';
+    'summaryIncome'
+  ).textContent =
+    money(income);
+
+
+  document.getElementById(
+    'summaryExpense'
+  ).textContent =
+    money(expense);
+
+
+  document.getElementById(
+    'summaryBalance'
+  ).textContent =
+    money(
+      income - expense
+    );
+
+
+  const entries =
+    Object.entries(
+      categories
+    )
+    .sort(
+      (a,b) =>
+        b[1] - a[1]
+    );
+
+
+  const box =
+    document.getElementById(
+      'summaryCategories'
+    );
+
+
+  if(!entries.length){
+
+    box.innerHTML =
+      `
+      <div class="empty">
+        Nenhum gasto registrado.
+      </div>
+      `;
+
+  }else{
+
+    box.innerHTML =
+      entries
+        .map(
+          ([category,value]) =>
+            `
+
+            <div class="account">
+
+              <span>
+                ${escapeHtml(category)}
+              </span>
+
+              <strong>
+                ${money(value)}
+              </strong>
+
+            </div>
+
+            `
+        )
+        .join('');
+
+  }
+
+
+  closeMore();
+
+  document.getElementById(
+    'summaryScreen'
+  ).style.display =
+    'block';
+
+}
+
+
+function closeSummary(){
+
+  document.getElementById(
+    'summaryScreen'
+  ).style.display =
+    'none';
+
+}
+
+
+function openMore(){
+
+  document.getElementById(
+    'moreScreen'
+  ).style.display =
+    'block';
+
+}
+
+
+function closeMore(){
+
+  document.getElementById(
+    'moreScreen'
+  ).style.display =
+    'none';
+
+}
+
+
+function openAccounts(){
+
+  const accounts =
+    Array.isArray(
+      financeData.accounts
+    )
+      ? financeData.accounts
+      : [];
+
+
+  const box =
+    document.getElementById(
+      'accountsList'
+    );
+
+
+  if(!accounts.length){
+
+    box.innerHTML =
+      `
+      <div class="section">
+
+        <div class="section-title">
+          CONTAS
+        </div>
+
+        <div class="empty">
+          Nenhuma conta cadastrada no Finance Terminal.
+        </div>
+
+      </div>
+      `;
+
+  }else{
+
+    box.innerHTML =
+      accounts
+        .map(
+          account =>
+            `
+
+            <div class="account">
+
+              <span>
+                ${escapeHtml(
+                  account.name ||
+                  account.nome ||
+                  'Conta'
+                )}
+              </span>
+
+              <strong>
+                ${money(
+                  account.balance ??
+                  account.saldo ??
+                  0
+                )}
+              </strong>
+
+            </div>
+
+            `
+        )
+        .join('');
+
+  }
+
+
+  closeMore();
+
+  document.getElementById(
+    'accountsScreen'
+  ).style.display =
+    'block';
+
+}
+
+
+function closeAccounts(){
+
+  document.getElementById(
+    'accountsScreen'
+  ).style.display =
+    'none';
+
+}
+
+
+function openSettings(){
+
+  closeMore();
+
+  document.getElementById(
+    'settingsScreen'
+  ).style.display =
+    'block';
+
+}
+
+
+function closeSettings(){
+
+  document.getElementById(
+    'settingsScreen'
+  ).style.display =
+    'none';
+
+}
+
+
+function goHome(){
+
+  closeSummary();
+
+  closeMore();
+
+  closeAccounts();
+
+  closeSettings();
+
+  window.scrollTo({
+    top:0,
+    behavior:'smooth'
+  });
+
+}
+
+
+async function logout(){
+
+  await supabaseClient
+    .auth
+    .signOut();
+
+  location.reload();
+
+}
+
+
+function showApp(){
+
+  const auth =
+    document.getElementById(
+      'authScreen'
+    );
+
+
+  if(auth){
+
+    auth.style.display =
+      'none';
+
+  }
+
 
   document.querySelector(
     '.app'
-  ).style.display='block';
+  ).style.display =
+    'block';
 
-  document.querySelector(
-    '.bottom'
-  ).style.display='flex';
+
+  document.getElementById(
+    'bottomNav'
+  ).style.display =
+    'flex';
+
 
   loadFinance();
+
 }
+
 
 function showLogin(){
 
   document.querySelector(
     '.app'
-  ).style.display='none';
+  ).style.display =
+    'none';
 
-  document.querySelector(
-    '.bottom'
-  ).style.display='none';
+
+  document.getElementById(
+    'bottomNav'
+  ).style.display =
+    'none';
+
 
   document.getElementById(
     'authScreen'
-  ).style.display='flex';
+  ).style.display =
+    'flex';
+
 }
+
 
 function createLogin(){
 
   const screen =
-    document.createElement('div');
+    document.createElement(
+      'div'
+    );
 
-  screen.id='authScreen';
 
-  screen.style.cssText=`
+  screen.id =
+    'authScreen';
+
+
+  screen.style.cssText = `
+
     position:fixed;
     inset:0;
     z-index:9999;
+
     display:flex;
     align-items:center;
     justify-content:center;
+
     padding:20px;
+
     background:#080c0d;
+
   `;
 
-  screen.innerHTML=`
+
+  screen.innerHTML = `
 
     <div style="
+
       width:100%;
       max-width:380px;
+
       padding:30px;
+
       border:1px solid #304345;
       border-radius:20px;
+
       background:#111718;
-      box-shadow:0 20px 60px #000b;
+
+      box-shadow:
+        0 20px 60px #000b;
+
     ">
 
       <div style="
+
         text-align:center;
+
         color:#f3b45b;
+
         font-size:22px;
+
         font-weight:800;
+
         letter-spacing:2px;
+
         margin-bottom:8px;
+
       ">
+
         FINANCE
+
       </div>
 
+
       <div style="
+
         text-align:center;
+
         color:#8d9999;
+
         font-size:13px;
+
         margin-bottom:25px;
+
       ">
+
         Entre na sua conta
+
       </div>
+
 
       <input
         id="loginEmail"
@@ -1108,92 +2224,127 @@ function createLogin(){
         placeholder="E-mail"
       >
 
+
       <input
         id="loginPassword"
         type="password"
         placeholder="Senha"
       >
 
+
       <button
         id="loginButton"
         class="save"
       >
+
         Entrar
+
       </button>
+
 
       <div
         id="loginMessage"
         style="
+
           text-align:center;
+
           color:#f3b45b;
+
           font-size:12px;
+
           margin-top:14px;
+
           min-height:18px;
+
         "
       ></div>
 
     </div>
+
   `;
 
-  document.body.appendChild(screen);
+
+  document.body.appendChild(
+    screen
+  );
+
 
   document.getElementById(
     'loginButton'
-  ).onclick=async()=>{
+  ).onclick =
+    async () => {
 
-    const email =
-      document.getElementById(
-        'loginEmail'
-      ).value.trim();
+      const email =
+        document.getElementById(
+          'loginEmail'
+        ).value.trim();
 
-    const password =
-      document.getElementById(
-        'loginPassword'
-      ).value;
 
-    const message =
-      document.getElementById(
-        'loginMessage'
-      );
+      const password =
+        document.getElementById(
+          'loginPassword'
+        ).value;
 
-    if(!email || !password){
 
-      message.textContent =
-        'Digite seu e-mail e sua senha.';
+      const message =
+        document.getElementById(
+          'loginMessage'
+        );
 
-      return;
-    }
 
-    message.textContent =
-      'Entrando...';
+      if(
+        !email ||
+        !password
+      ){
 
-    const {
-      data,
-      error
-    } =
-      await supabaseClient.auth
-        .signInWithPassword({
-          email,
-          password
-        });
+        message.textContent =
+          'Digite seu e-mail e sua senha.';
 
-    if(error){
+        return;
+
+      }
+
 
       message.textContent =
-        'E-mail ou senha incorretos.';
+        'Entrando...';
 
-      console.error(error);
 
-      return;
-    }
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .auth
+          .signInWithPassword({
 
-    if(data.session){
+            email,
+            password
 
-      showApp();
+          });
 
-    }
-  };
+
+      if(error){
+
+        message.textContent =
+          'E-mail ou senha incorretos.';
+
+        console.error(error);
+
+        return;
+
+      }
+
+
+      if(data.session){
+
+        showApp();
+
+      }
+
+    };
+
 }
+
 
 document.getElementById(
   'today'
@@ -1202,111 +2353,28 @@ document.getElementById(
     'pt-BR'
   );
 
+
 createLogin();
 
-supabaseClient.auth
+
+supabaseClient
+  .auth
   .getSession()
-  .then(({data})=>{
+  .then(
+    ({data}) => {
 
-    if(data.session)
-      showApp();
+      if(data.session){
 
-    else
-      showLogin();
+        showApp();
 
-  });
-  function openSummary(){
+      }else{
 
-  let income = 0;
-  let expense = 0;
-  const categories = {};
+        showLogin();
 
-  financeData.moves.forEach(move => {
-
-    const value = Number(move.value || 0);
-
-    if(move.type === 'income'){
-
-      income += value;
-
-    }else{
-
-      expense += value;
-
-      const category = move.cat || 'Outros';
-
-      categories[category] =
-        (categories[category] || 0) + value;
+      }
 
     }
-
-  });
-
-  document.getElementById('summaryIncome').textContent =
-    money(income);
-
-  document.getElementById('summaryExpense').textContent =
-    money(expense);
-
-  document.getElementById('summaryBalance').textContent =
-    money(income - expense);
-
-  const categoryBox =
-    document.getElementById('summaryCategories');
-
-  const entries =
-    Object.entries(categories)
-      .sort((a,b) => b[1] - a[1]);
-
-  if(!entries.length){
-
-    categoryBox.innerHTML = `
-      <div style="
-        background:#182224;
-        padding:18px;
-        border-radius:14px;
-        color:#999;
-      ">
-        Nenhum gasto registrado.
-      </div>
-    `;
-
-  }else{
-
-    categoryBox.innerHTML =
-      entries.map(([category,value]) => `
-
-        <div style="
-          display:flex;
-          justify-content:space-between;
-          background:#182224;
-          padding:17px;
-          border-radius:14px;
-          margin-bottom:8px;
-        ">
-
-          <span>${category}</span>
-
-          <strong>${money(value)}</strong>
-
-        </div>
-
-      `).join('');
-
-  }
-
-  document.getElementById('summaryScreen').style.display =
-    'block';
-
-}
-
-
-function closeSummary(){
-
-  document.getElementById('summaryScreen').style.display =
-    'none';
-
-}
+  );
 
 </script>
 
